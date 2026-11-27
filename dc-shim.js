@@ -8,7 +8,7 @@
   const interp = (s, scope) => s.replace(ALL, (_, e) => { const v = ev(e, scope); return v == null ? '' : String(v); });
   const BOOL = { muted: 'muted', autoplay: 'autoplay', loop: 'loop', controls: 'controls', playsinline: 'playsInline', disablepictureinpicture: 'disablePictureInPicture' };
   function build(tpl, scope, out) {
-    for (const n of tpl.childNodes) {
+    for (const n of Array.from((tpl && tpl.childNodes) || [])) {
       if (n.nodeType === 3) { out.push({ t: 3, v: interp(n.nodeValue, scope) }); continue; }
       if (n.nodeType !== 1) continue;
       const tag = n.tagName.toLowerCase();
@@ -24,7 +24,7 @@
         if (BOOL[lname] !== undefined) { const v = m ? ev(m[1], scope) : true; node.props[BOOL[lname]] = !!v; if (v) node.attrs[lname] = ''; continue; }
         if (m) { const v = ev(m[1], scope); if (v === false || v == null) continue; node.attrs[name] = v === true ? '' : String(v); } else node.attrs[name] = interp(a.value, scope);
       }
-      build(n.content || n, scope, node.kids);
+      build(n.tagName === 'TEMPLATE' && n.content ? n.content : n, scope, node.kids);
       out.push(node);
     }
     return out;
