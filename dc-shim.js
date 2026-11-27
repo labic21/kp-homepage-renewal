@@ -35,7 +35,7 @@
     patchEl(el, v, true); return el;
   }
   function patchEl(el, v, fresh) {
-    for (const a of Array.from(el.attributes)) if (!(a.name in v.attrs)) el.removeAttribute(a.name);
+    const prevA = el.__ta || {}; for (const k in prevA) if (!(k in v.attrs)) el.removeAttribute(k); el.__ta = v.attrs;
     for (const k in v.attrs) if (el.getAttribute(k) !== v.attrs[k]) el.setAttribute(k, v.attrs[k]);
     for (const k in v.props) if (el[k] !== v.props[k]) el[k] = v.props[k];
     el.__on = el.__on || {};
